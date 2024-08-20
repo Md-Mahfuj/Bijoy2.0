@@ -1,125 +1,167 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Input } from "postcss";
 
-export default function Register() {
-  const router = useRouter();
-  const [disabled, setDisabled] = useState(false);
+import React, { useState } from "react";
+
+export default function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const [isChecked, setIsChecked] = useState(false);
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
 
-  const [loadings, setLoadings] = useState(false);
-  const [sinupMessage, setSinupMessage] = useState("");
+    if (!name.trim()) {
+      newErrors.name = "Full Name is required.";
+    }
+    if (!email.trim()) {
+      newErrors.email = "Email is required.";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Email is invalid.";
+    }
+    if (!zipCode.trim()) {
+      newErrors.zipCode = "Zip Code is required.";
+    } else if (!/^\d{5}$/.test(zipCode)) {
+      newErrors.zipCode = "Zip Code must be 5 digits.";
+    }
+    if (!password.trim()) {
+      newErrors.password = "Password is required.";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters.";
+    }
+    if (!confirmPassword.trim()) {
+      newErrors.confirmPassword = "Confirm Password is required.";
+    } else if (confirmPassword !== password) {
+      newErrors.confirmPassword = "Passwords do not match.";
+    }
 
-  const handleEmail = (event: any) => {
-    const value = event.target.value;
-    setEmail(value);
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-  const handlePassword = (event: any) => {
-    const value = event.target.value;
-    setPassword(value);
-  };
-  const handleName = (event: any) => {
-    const value = event.target.value;
-    setName(value);
-  };
 
-  const onSubmit = async () => {
-    if (email && password && name) {
-      try {
-      } catch (error) {}
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validate()) {
+      console.log("Form is valid!");
     }
   };
 
   return (
-    <>
-      <div className="py-36 sm:py-28 bg-white sm:bg-gray-100 flex min-h-full flex-1 flex-col justify-center sm:px-6 lg:px-8">
-        <div className=" sm:mx-auto sm:w-full sm:max-w-[480px] ">
-          <div className="bg-white px-6 pb-12  sm:shadow-lg sm:rounded-xl sm:px-12">
-            <h2 className="mt-6 pb-12 sm:pt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-              Sign in to your account
-            </h2>
-
-            <div className="space-y-6">
-              <div>
-                <h1 className="block text-sm font-medium leading-6 text-gray-900">
-                  Full Name
-                </h1>
-
-                <input
-                  onChange={handleName}
-                  value={name || ""}
-                  className="mt-2 py-3"
-                  type="text"
-                  id="name"
-                  placeholder="Eenter your name"
-                />
-              </div>
-
-              <div>
-                <h1 className="block text-sm font-medium leading-6 text-gray-900">
-                  Email
-                </h1>
-                <input
-                  onChange={handleEmail}
-                  value={email || ""}
-                  className="mt-2 py-3"
-                  type="text"
-                  id="email"
-                  placeholder="Eenter your  email"
-                />
-              </div>
-
-              <div>
-                <h1 className="block text-sm font-medium leading-6 text-gray-900">
-                  Password
-                </h1>
-                <input
-                  onChange={handlePassword}
-                  value={password || ""}
-                  className="mt-2 py-3"
-                  type="text"
-                  id="password"
-                  placeholder="Eenter your password"
-                />
-              </div>
-
-              <div className="pt-4">
-                <button
-                  onClick={onSubmit}
-                  className="w-full uppercase rounded-md border border-transparent bg-indigo-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
-                >
-                  Signup
-                </button>
-              </div>
-
-              <p className=" sm:hidden sm:mt-5 text-center text-sm text-gray-500">
-                Already you have account?{" "}
-                <a
-                  //   href="/login"
-                  className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
-                >
-                  Please Login
-                </a>
-              </p>
-            </div>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white p-8 shadow-lg rounded-lg">
+        <h2 className="text-center text-2xl font-bold text-gray-900">
+          Create Your Account
+        </h2>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Full Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+            )}
           </div>
 
-          <p className="hidden sm:block sm:mt-5 text-center text-sm text-gray-500">
-            Already you have account?{" "}
-            <a
-              //   href="/login"
-              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
             >
-              Please Login
-            </a>
-          </p>
-        </div>
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="zipCode"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Zip Code
+            </label>
+            <input
+              type="number"
+              id="zipCode"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
+            />
+            {errors.zipCode && (
+              <p className="text-red-500 text-xs mt-1">{errors.zipCode}</p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
+          </div>
+
+          <div>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.confirmPassword}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Sign Up
+            </button>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 }
